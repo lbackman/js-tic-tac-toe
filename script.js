@@ -26,7 +26,11 @@ const gameBoard = (function (rows, columns) {
     return board.map((arr) => arr.join('|')).join("\n-----\n")
   };
 
-  return { placeMarker, currentBoard }
+  const getBoard = () => board;
+
+  const getTranspose = () => board[0].map((_, i) => board.map(x => x[i]))
+
+  return { placeMarker, currentBoard, getBoard, getTranspose }
 })(3, 3);
 
 const player = function (name, marker){
@@ -46,6 +50,7 @@ const ticTacToe = (function (player1, player2, board) {
   };
 
   const playRound = function () {
+    console.log(`It's ${players[currentPlayerIndex].name}'s turn`)
     const y = input = prompt("Which row?");
     const x = input = prompt("Which column?");
     if (board.placeMarker(players[currentPlayerIndex].marker, x, y)) {
@@ -56,11 +61,45 @@ const ticTacToe = (function (player1, player2, board) {
     };
   };
 
+  const endgame = function () {
+    const symbol = players[1 - currentPlayerIndex].marker
+    if (win(symbol)) {
+      console.log(`${players[1 - currentPlayerIndex].name} wins!`);
+      return true;
+    } else if (gameBoard.getBoard().flat().includes(' ')) {
+      return false;
+    } else {
+      console.log('Draw');
+      return true;
+    };
+  };
+
+  const win = function (symbol) {
+    // check rows, columns and diagonals for win conditions
+    return winRow(board.getBoard(), symbol) || winRow(board.getTranspose(), symbol) || winDiagonal(board.getBoard(), symbol);
+  };
+
+  const winRow = function (playingBoard, symbol) {
+    return playingBoard.some((row) => row.every((tile) => tile === symbol));
+  };
+
+  const winDiagonal = function (playingBoard, symbol) {
+    const size = playingBoard.length
+    const firstDiagonal = [];
+    const secondDiagonal = [];
+    for (let i = 0; i < size; i++) {
+      firstDiagonal.push(playingBoard[i][i]);
+      secondDiagonal.push(playingBoard[size - 1 - i][i])
+    };
+    return [firstDiagonal, secondDiagonal].some((diagonal) => diagonal.every((el) => el === symbol));
+  };
+
   const playGame = function () {
-    while (true) {
+    while (!endgame()) {
       playRound();
       console.log(board.currentBoard());
     };
+    console.log('Game done');
   };
 
   return { playGame };
