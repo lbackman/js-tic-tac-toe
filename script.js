@@ -3,12 +3,17 @@ console.log('tic tac toe');
 const gameBoard = (function (rows, columns) {
   const board = [];
 
-  for (let i = 0; i < rows; i++) {
-    board[i] = [];
-    for (let j = 0; j < columns; j++) {
-      board[i][j] = ' ';
+  const resetBoard = function () {
+    board.length = 0;
+    for (let i = 0; i < rows; i++) {
+      board[i] = [];
+      for (let j = 0; j < columns; j++) {
+        board[i][j] = ' ';
+      };
     };
   };
+
+  resetBoard();
 
   const placeMarker = function (marker, x, y) {
     if (y > rows || x > columns || y < 0 || x < 0) {
@@ -30,7 +35,7 @@ const gameBoard = (function (rows, columns) {
 
   const getTranspose = () => board[0].map((_, i) => board.map(x => x[i]));
 
-  return { placeMarker, currentBoard, getBoard, getTranspose };
+  return { placeMarker, currentBoard, resetBoard, getBoard, getTranspose };
 })(3, 3);
 
 const player = function (name, marker){
@@ -59,6 +64,13 @@ const ticTacToe = (function (player1, player2, board) {
       };
       
     };
+  };
+
+  const restartGame = function () {
+    gameOver = false;
+    currentPlayerIndex = 0;
+    board.resetBoard();
+    console.log('New game started');
   };
 
   const setGameStatus = function () {
@@ -95,7 +107,7 @@ const ticTacToe = (function (player1, player2, board) {
     return [firstDiagonal, secondDiagonal].some((diagonal) => diagonal.every((el) => el === symbol));
   };
 
-  return { playRound };
+  return { playRound, restartGame };
 })(playerOne, playerTwo, gameBoard);
 
 const startGame = function () {
@@ -105,6 +117,8 @@ const startGame = function () {
       ticTacToe.playRound(...position);
     };
   });
+  const restartGameButton = document.querySelector('.restart-game');
+  restartGameButton.addEventListener("click", ticTacToe.restartGame);
 };
 
 const startGameButton = document.querySelector('.start-game');
