@@ -7,7 +7,7 @@ const gameBoard = (function (rows, columns) {
     board[i] = [];
     for (let j = 0; j < columns; j++) {
       board[i][j] = ' ';
-    }
+    };
   };
 
   const placeMarker = function (marker, x, y) {
@@ -18,59 +18,60 @@ const gameBoard = (function (rows, columns) {
       return true;
     } else {
       console.log('Occupied slot');
-    }
+    };
     return false;
   };
 
   const currentBoard = function () {
-    return board.map((arr) => arr.join('|')).join("\n-----\n")
+    return board.map((arr) => arr.join('|')).join("\n-----\n");
   };
 
   const getBoard = () => board;
 
-  const getTranspose = () => board[0].map((_, i) => board.map(x => x[i]))
+  const getTranspose = () => board[0].map((_, i) => board.map(x => x[i]));
 
-  return { placeMarker, currentBoard, getBoard, getTranspose }
+  return { placeMarker, currentBoard, getBoard, getTranspose };
 })(3, 3);
 
 const player = function (name, marker){
-  return { name, marker }
+  return { name, marker };
 };
 
 const playerOne = player("Player 1", "X");
 const playerTwo = player("Player 2", "O");
 
 const ticTacToe = (function (player1, player2, board) {
+  let gameOver = false;
 
-  const players = [player1, player2]
+  const players = [player1, player2];
   let currentPlayerIndex = 0;
 
   const changePlayerIndex = function (playerIndex) {
     return 1 - playerIndex;
   };
 
-  const playRound = function () {
-    console.log(`It's ${players[currentPlayerIndex].name}'s turn`)
-    const y = input = prompt("Which row?");
-    const x = input = prompt("Which column?");
-    if (board.placeMarker(players[currentPlayerIndex].marker, x, y)) {
-      currentPlayerIndex = changePlayerIndex(currentPlayerIndex);
-      console.log(`Current player: ${players[currentPlayerIndex].marker}`);
-    } else {
-      alert("Try again");
+  const playRound = function (y, x) {
+    if (!gameOver) {
+      if (board.placeMarker(players[currentPlayerIndex].marker, x, y)) {
+        currentPlayerIndex = changePlayerIndex(currentPlayerIndex);
+        setGameStatus();
+        console.log(board.currentBoard());
+      };
+      
     };
   };
 
-  const endgame = function () {
-    const symbol = players[1 - currentPlayerIndex].marker
+  const setGameStatus = function () {
+    const symbol = players[1 - currentPlayerIndex].marker;
     if (win(symbol)) {
-      console.log(`${players[1 - currentPlayerIndex].name} wins!`);
-      return true;
+      gameOver = true;
+      const winner = players[1 - currentPlayerIndex];
+      console.log(`${winner.name} wins!`)
     } else if (gameBoard.getBoard().flat().includes(' ')) {
-      return false;
+      console.log(`Current player: ${players[currentPlayerIndex].marker}`);
     } else {
+      gameOver = true;
       console.log('Draw');
-      return true;
     };
   };
 
@@ -84,23 +85,27 @@ const ticTacToe = (function (player1, player2, board) {
   };
 
   const winDiagonal = function (playingBoard, symbol) {
-    const size = playingBoard.length
+    const size = playingBoard.length;
     const firstDiagonal = [];
     const secondDiagonal = [];
     for (let i = 0; i < size; i++) {
       firstDiagonal.push(playingBoard[i][i]);
-      secondDiagonal.push(playingBoard[size - 1 - i][i])
+      secondDiagonal.push(playingBoard[size - 1 - i][i]);
     };
     return [firstDiagonal, secondDiagonal].some((diagonal) => diagonal.every((el) => el === symbol));
   };
 
-  const playGame = function () {
-    while (!endgame()) {
-      playRound();
-      console.log(board.currentBoard());
-    };
-    console.log('Game done');
-  };
-
-  return { playGame };
+  return { playRound };
 })(playerOne, playerTwo, gameBoard);
+
+const startGame = function () {
+  document.querySelector('.board').addEventListener('click', function (e) {
+    if (e.target && e.target.matches('.box')) {
+      const position = e.target.dataset.position.split(',').map((el) => Number(el));
+      ticTacToe.playRound(...position);
+    };
+  });
+};
+
+const startGameButton = document.querySelector('.start-game');
+startGameButton.addEventListener("click", startGame);
