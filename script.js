@@ -47,17 +47,22 @@ const playerTwo = player("Player 2", "O");
 
 const gameDisplay = (function () {
   const boxes = document.querySelectorAll('.box');
+  const messageBox = document.querySelector('.message');
 
-  const updateDisplay = function (board, col, row) {
+  const updateBoard = function (board, col, row) {
     // map index from 2d to 1d array
-    const index = board.length * col + row
+    const index = board.length * col + row;
     boxes[index].textContent = board[col][row];
   };
 
-  const clearDisplay = function () {
+  const clearBoard = function () {
     boxes.forEach(box => box.textContent = ' ');
   };
-  return { updateDisplay, clearDisplay };
+
+  const updateMessage = function (message) {
+    messageBox.textContent = message;
+  };
+  return { updateBoard, clearBoard, updateMessage };
 })();
 
 const ticTacToe = (function (player1, player2, board, display) {
@@ -71,6 +76,7 @@ const ticTacToe = (function (player1, player2, board, display) {
   };
 
   const initialMessage = function () {
+    display.updateMessage(`New game started, ${players[currentPlayerIndex].name} starts`);
     console.log('New game started');
     console.log(`${players[currentPlayerIndex].name} starts`);
   };
@@ -81,7 +87,7 @@ const ticTacToe = (function (player1, player2, board, display) {
         currentPlayerIndex = changePlayerIndex(currentPlayerIndex);
         setGameStatus();
         console.log(board.currentBoard());
-        display.updateDisplay(board.getBoard(), y, x);
+        display.updateBoard(board.getBoard(), y, x);
       };
     };
   };
@@ -90,7 +96,7 @@ const ticTacToe = (function (player1, player2, board, display) {
     gameOver = false;
     currentPlayerIndex = 0;
     board.resetBoard();
-    display.clearDisplay();
+    display.clearBoard();
     initialMessage();
   };
 
@@ -99,11 +105,14 @@ const ticTacToe = (function (player1, player2, board, display) {
     if (win(symbol)) {
       gameOver = true;
       const winner = players[1 - currentPlayerIndex];
+      display.updateMessage(`${winner.name} wins!`);
       console.log(`${winner.name} wins!`)
     } else if (gameBoard.getBoard().flat().includes(' ')) {
-      console.log(`Current player: ${players[currentPlayerIndex].marker}`);
+      display.updateMessage(`Current player: ${players[currentPlayerIndex].name} (${players[currentPlayerIndex].marker})`);
+      console.log(`Current player: ${players[currentPlayerIndex].name} (${players[currentPlayerIndex].marker})`);
     } else {
       gameOver = true;
+      display.updateMessage('Draw');
       console.log('Draw');
     };
   };
@@ -132,6 +141,7 @@ const ticTacToe = (function (player1, player2, board, display) {
 })(playerOne, playerTwo, gameBoard, gameDisplay);
 
 const startGame = function () {
+  
   ticTacToe.initialMessage();
   document.querySelector('.board').addEventListener('click', function (e) {
     if (e.target && e.target.matches('.box')) {
