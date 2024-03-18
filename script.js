@@ -70,6 +70,11 @@ const ticTacToe = (function (player1, player2, board, display) {
     return 1 - playerIndex;
   };
 
+  const initialMessage = function () {
+    console.log('New game started');
+    console.log(`${players[currentPlayerIndex].name} starts`);
+  };
+
   const playRound = function (y, x) {
     if (!gameOver) {
       if (board.placeMarker(players[currentPlayerIndex].marker, x, y)) {
@@ -86,7 +91,7 @@ const ticTacToe = (function (player1, player2, board, display) {
     currentPlayerIndex = 0;
     board.resetBoard();
     display.clearDisplay();
-    console.log('New game started');
+    initialMessage();
   };
 
   const setGameStatus = function () {
@@ -123,10 +128,11 @@ const ticTacToe = (function (player1, player2, board, display) {
     return [firstDiagonal, secondDiagonal].some((diagonal) => diagonal.every((el) => el === symbol));
   };
 
-  return { playRound, restartGame };
+  return { initialMessage, playRound, restartGame };
 })(playerOne, playerTwo, gameBoard, gameDisplay);
 
 const startGame = function () {
+  ticTacToe.initialMessage();
   document.querySelector('.board').addEventListener('click', function (e) {
     if (e.target && e.target.matches('.box')) {
       const position = e.target.dataset.position.split(',').map((el) => Number(el));
