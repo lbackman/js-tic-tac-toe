@@ -45,7 +45,22 @@ const player = function (name, marker){
 const playerOne = player("Player 1", "X");
 const playerTwo = player("Player 2", "O");
 
-const ticTacToe = (function (player1, player2, board) {
+const gameDisplay = (function () {
+  const boxes = document.querySelectorAll('.box');
+
+  const updateDisplay = function (board, col, row) {
+    // map index from 2d to 1d array
+    const index = board.length * col + row
+    boxes[index].textContent = board[col][row];
+  };
+
+  const clearDisplay = function () {
+    boxes.forEach(box => box.textContent = ' ');
+  };
+  return { updateDisplay, clearDisplay };
+})();
+
+const ticTacToe = (function (player1, player2, board, display) {
   let gameOver = false;
 
   const players = [player1, player2];
@@ -61,8 +76,8 @@ const ticTacToe = (function (player1, player2, board) {
         currentPlayerIndex = changePlayerIndex(currentPlayerIndex);
         setGameStatus();
         console.log(board.currentBoard());
+        display.updateDisplay(board.getBoard(), y, x);
       };
-      
     };
   };
 
@@ -70,6 +85,7 @@ const ticTacToe = (function (player1, player2, board) {
     gameOver = false;
     currentPlayerIndex = 0;
     board.resetBoard();
+    display.clearDisplay();
     console.log('New game started');
   };
 
@@ -108,7 +124,7 @@ const ticTacToe = (function (player1, player2, board) {
   };
 
   return { playRound, restartGame };
-})(playerOne, playerTwo, gameBoard);
+})(playerOne, playerTwo, gameBoard, gameDisplay);
 
 const startGame = function () {
   document.querySelector('.board').addEventListener('click', function (e) {
