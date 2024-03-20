@@ -65,7 +65,7 @@ const gameDisplay = (function () {
   return { updateBoard, clearBoard, updateMessage };
 })();
 
-const ticTacToe = (function (player1, player2, board, display) {
+const ticTacToe = function (player1, player2, board, display) {
   let gameOver = false;
 
   const players = [player1, player2];
@@ -138,19 +138,29 @@ const ticTacToe = (function (player1, player2, board, display) {
   };
 
   return { initialMessage, playRound, restartGame };
-})(playerOne, playerTwo, gameBoard, gameDisplay);
+};
 
 const startGame = function () {
-  
-  ticTacToe.initialMessage();
-  document.querySelector('.board').addEventListener('click', function (e) {
-    if (e.target && e.target.matches('.box')) {
-      const position = e.target.dataset.position.split(',').map((el) => Number(el));
-      ticTacToe.playRound(...position);
-    };
-  });
-  const restartGameButton = document.querySelector('.restart-game');
-  restartGameButton.addEventListener("click", ticTacToe.restartGame);
+  const name1Field = document.getElementById('name1');
+  const name2Field = document.getElementById('name2');
+  const name1 = name1Field.value.trim();
+  const name2 = name2Field.value.trim();
+  if (name1 != '' && name2 != '' && name1 != name2) {
+    const game = ticTacToe(player(name1, 'X'), player(name2, 'O'), gameBoard, gameDisplay)
+    game.initialMessage();
+    document.querySelector('.board').addEventListener('click', function (e) {
+      if (e.target && e.target.matches('.box')) {
+        const position = e.target.dataset.position.split(',').map((el) => Number(el));
+        game.playRound(...position);
+      };
+    });
+    startGameButton.removeEventListener("click", startGame);
+    startGameButton.disabled = true;
+    name1Field.disabled = true;
+    name2Field.disabled = true;
+    const restartGameButton = document.querySelector('.restart-game');
+    restartGameButton.addEventListener("click", game.restartGame);
+  }
 };
 
 const startGameButton = document.querySelector('.start-game');
