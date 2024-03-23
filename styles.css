@@ -4,10 +4,13 @@ body {
   margin-left: 1em;
 }
 
-.board {
-	width: 500px;
+.game, .board {
+  width: 500px;
 	height: 500px;
-	margin: 0 auto;
+  margin: 0 auto;
+}
+
+.board {
   background-color: #518fcc;
   color: #fff;
   border: 6px solid #2c3e50;
@@ -15,6 +18,12 @@ body {
 	
 	display: grid;
 	grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+}
+
+.message {
+  text-align: center;
+  font-size: large;
+  height: 21px;
 }
 
 .box {
@@ -25,8 +34,20 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  user-select: none;
 }
 
 .box:focus {
   border: 6px solid #8da81e;
+}
+
+.players, .player {
+  margin-bottom: 5px;
+}
+
+button {
+  background-color: #518fcc;
+  color: #fff;
+  border: 2px solid #2c3e50;
+  border-radius: 3px;
 }

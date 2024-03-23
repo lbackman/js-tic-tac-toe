@@ -155,10 +155,11 @@ const startGame = function () {
       };
     });
     startGameButton.removeEventListener("click", startGame);
-    startGameButton.disabled = true;
+    startGameButton.hidden = true;
     name1Field.disabled = true;
     name2Field.disabled = true;
     const restartGameButton = document.querySelector('.restart-game');
+    restartGameButton.hidden = false;
     restartGameButton.addEventListener("click", game.restartGame);
   }
 };
